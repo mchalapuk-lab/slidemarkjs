@@ -1,0 +1,25 @@
+{
+  "name": "slidemarkjs",
+  "version": "0.0.1",
+  "authors": [
+    "Maciej Chałapuk <m.chalapuk@gmail.com>"
+  ],
+  "description": "Slide Markup Parser (node and browser compatible)",
+  "main": "dist/slidemark.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "slidemark",
+    "parser"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/muroc/slidemarkjs",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
