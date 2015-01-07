@@ -6,8 +6,15 @@ exports.toHtml = require("../src/toHtml");
 },{"../src/parse":2,"../src/toHtml":3}],2:[function(require,module,exports){
 'use strict';
 
+var slidesMethods = {
+  toHtml : function() {
+    return "";
+  }
+};
+
 function newSlides() {
   var slides = [];
+  slides.__proto__ = slidesMethods;
   return slides;
 }
 

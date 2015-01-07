@@ -1,4 +1,4 @@
-describe("Given slidemark namespace,", function() {
+describe("slidemark.toHtml() function,", function() {
   'use strict';
 
   var slidemark = require("../src/toHtml");

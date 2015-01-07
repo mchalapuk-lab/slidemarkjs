@@ -1,4 +1,4 @@
-describe("Parser,", function() {
+describe("slidemark.parse() function,", function() {
   "use strict";
 
   var parse = require("../src/parse").parse;
@@ -30,6 +30,6 @@ describe("Parser,", function() {
     it("should return result that serializes to empty HTML", function() {
       var slides = this.test();
       expect(slides.toHtml()).toEqual("");
-    })
+    });
   });
 });
