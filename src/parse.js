@@ -1,7 +1,14 @@
 'use strict';
 
+var slidesMethods = {
+  toHtml : function() {
+    return "";
+  }
+};
+
 function newSlides() {
   var slides = [];
+  slides.__proto__ = slidesMethods;
   return slides;
 }
 

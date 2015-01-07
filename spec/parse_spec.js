@@ -27,5 +27,9 @@ describe("Parser,", function() {
       var slides = this.test();
       expect(slides.length).toEqual(0);
     });
+    it("should return result that serializes to empty HTML", function() {
+      var slides = this.test();
+      expect(slides.toHtml()).toEqual("");
+    })
   });
 });
