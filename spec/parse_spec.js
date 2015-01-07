@@ -11,7 +11,7 @@ describe("Parser,", function() {
       try {
         this.test();
       } catch(e) {
-        e.message == "slidemark code is undefined";
+        expect(e.message).toEqual("slidemark code is not defined");
       }
     });
   });
@@ -22,6 +22,10 @@ describe("Parser,", function() {
     });
     it("should parse without error", function() {
       expect(this.test).not.toThrow();
+    });
+    it("should return empty array", function() {
+      var slides = this.test();
+      expect(slides.length).toEqual(0);
     });
   });
 });
