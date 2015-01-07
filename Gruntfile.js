@@ -1,17 +1,18 @@
 module.exports = function(grunt) {
   grunt.initConfig({
-    jasmine : {
-      pivotal : {
-        src : 'src/**/*.js',
-        options: {
-          specs : 'specs/**/*spec.js',
-          helpers : 'specs/helpers/*.js'
-        }
+    jshint: {
+      all: ['Gruntfile.js', 'lib/slidemark.js', 'src/**/.js', 'spec/**/*.js'],
+    },
+    browserify : {
+      all: {
+        src : ['lib/slidemark.js'],
+        dest : "dist/slidemark.js"
       }
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
-  grunt.registerTask('default', 'jasmine');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-browserify');
+  grunt.registerTask('default', ['jshint', 'browserify']);
 };
 
