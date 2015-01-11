@@ -1,28 +1,33 @@
 'use strict';
 
-var slidesMethods = {
-  toHtml : function() {
-    return "";
-  }
-};
+var Lexer = require("./internal/lexer");
+var Parser = require("./internal/parser");
+var Semantizer = require("./internal/semantizer");
+var Generator = require("./internal/generator");
+var ParseError = require("./internal/parseerror");
 
-function newSlides() {
-  var slides = [];
-  slides.__proto__ = slidesMethods;
-  return slides;
+function Phase(name, applyPhase) {
+  return function(input) {
+    var output = applyPhase(input);
+    if (phase.hasErrors) {
+      throw ParseError.create(name, func.errors);
+    }
+    return output;
+  }
 }
 
 exports.parse = function(slidemarkCode) {
-  if (slidemarkCode === undefined) {
-    throw new Error("slidemark code is not defined");
+  var phases = [
+    new Phase("Lexing", Lexer.create()),
+    new Phase("Parsing", Parser.create()),
+    new Phase("Semantic", Semantizer.create()),
+    new Phase("Generation", Generator.create())
+  ];
+  function run(input, phase) {
+    return phase(input);
   }
-  var slides = newSlides();
+  var slides = phases.reduce(run, slidemarkCode);
 
-  var trimmedCode = slidemarkCode.trim();
-  if (trimmedCode === "") {
-    return slides;
-  }
-
-  throw new Error("not implemented");
+  return slides;
 };
 

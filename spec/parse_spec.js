@@ -1,4 +1,4 @@
-describe("slidemark.parse() function,", function() {
+describe("slidemark.parse(),", function() {
   "use strict";
 
   var parse = require("../src/parse").parse;
@@ -32,4 +32,22 @@ describe("slidemark.parse() function,", function() {
       expect(slides.toHtml()).toEqual("");
     });
   });
+
+  describe("given slidemark with one empty slide,", function() {
+    beforeEach(function() {
+      this.test = parse.bind(null, "%title%");
+    });
+    it("should parse without error", function() {
+      expect(this.test).not.toThrow();
+    });
+    it("should return array with one slide", function() {
+      var slides = this.test();
+      expect(slides.length).toEqual(1);
+    });
+    it("should return result that serializes to proper HTML", function() {
+      var slides = this.test();
+      expect(slides.toHtml()).toEqual('<slide name="title"><slide>');
+    });
+  });
 });
+
