@@ -7,6 +7,5 @@
     "grunt-browserify": "~3.2.1"
   },
   "dependencies": {
-    "lex": "~1.7.8"
   }
 }

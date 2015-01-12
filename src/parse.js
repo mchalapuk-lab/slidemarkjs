@@ -9,8 +9,8 @@ var ParseError = require("./internal/parseerror");
 function Phase(name, applyPhase) {
   return function(input) {
     var output = applyPhase(input);
-    if (phase.hasErrors) {
-      throw ParseError.create(name, func.errors);
+    if (applyPhase.hasErrors) {
+      throw ParseError.create(name, applyPhase.errors);
     }
     return output;
   }
