@@ -24,31 +24,15 @@ describe("lexer instance,", function() {
     });
   });
 
-  function test(title, input, output) {
-    return { name: title, input: input, expected: output };
-  }
-  function token(type, value, offset) {
-    return { type: type, value: value, offset: offset };
-  }
-  function o(value, offset) {
-    return token("operator", value, offset);
-  }
-  function l(value, offset) {
-    return token("literal", value, offset);
-  }
-  function u(value, offset) {
-    return token("unknown", value, offset);
-  }
-
   [
-    test("one empty slide", "%slide%", [l("%slide%", 0)]),
-    test("two slides",
+    iotest("one empty slide", "%slide%", [l("%slide%", 0)]),
+    iotest("two slides",
          "%slide%\ncontent\n%slide2%\n",
          [l("%slide%", 0), u("content\n", 8), l("%slide2%", 16)]
          ),
-    test("slide with tags", "%s% :t1:t2:", [l("%s%", 0), l(":t1:t2:", 4)]),
-    test("comment", "% comment", [o("%", 0), l("comment", 2)]),
-    test("%% directive", "%%", [o("%%", 0)])
+    iotest("slide with tags", "%s% :t1:t2:", [l("%s%", 0), l(":t1:t2:", 4)]),
+    iotest("comment", "% comment", [o("%", 0), l("comment", 2)]),
+    iotest("%% directive", "%%", [o("%%", 0)])
 
   ].forEach(function(t) {
     describe("and " + t.name + ",", function() {
