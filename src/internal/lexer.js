@@ -1,93 +1,76 @@
 'usestrict';
+/*
 
-function token(type, value, offset) {
-  return { type: type, value: value, offset: offset };
-}
+  Takes a string containing slidemark directives.
+  '%' at first char in the line indicates start of a directive.
+  White spaces are used as separators between literals.
+ 
+  Returns array with tokens { type, value, offset }, where:
 
-function lex0(slidemark) {
+   type      | possible value
+  -----------+--------------------------------------------------
+  'operator' | '%' or '%%'
+  'literal'  | any string that is not an operator,
+  'unknown'  | unprocessed lines that do not start with '%' char
+
+ */
+function lex(slidemark) {
+  if (slidemark === undefined) {
+    var error = new Error("slidemark");
+    error.name = "ReferenceError";
+    throw error;
+  }
+
   var tokens = [];
-
-  var content = "", contentIndex = -1;
-  function addContent(c, i) {
-    if (contentIndex === -1) {
-      contentIndex = i;
-    }
-    content += c;
-  }
-  function flushContent() {
-    if (contentIndex == -1) {
-      return;
-    }
-    var lastCharIndex = content.length - 1;
-    if (content.charAt(lastCharIndex) == '\n') {
-      content = content.substr(0, lastCharIndex);
-    }
-    tokens.push(token("content", content, contentIndex));
-    content = "";
-    contentIndex = -1;
-  }
-
+  var directiveStarter = '%';
+  var operators = /^%?%$/;
+  var separators = /[ \t\n]/;
   var start = 0, end;
 
   function processLine(line) {
-    if (line === "") {
+    var offset = 0;
+    function token(type, value) {
+      var t = { type: type, value: value, offset: start + offset };
+      tokens.push(t);
+      return t;
+    }
+
+    if (line.charAt(0) !== directiveStarter) {
+      token("unknown", line);
       return;
     }
 
-    var titleRegex = /^%([a-z0-9-_+.,]+)%([ \t]+(:[a-z0-9-_]*)*[ \t]*)?/i;
-    var result = titleRegex.exec(line);
-
-    if (result) {
-      var title = result[1];
-      var tags = result[2];
-
-      flushContent();
-      var offset = start + result.index;
-      tokens.push(token("slide", title, offset));
-   
-      if (!tags) {
-        return;
+    line.split(separators).forEach(function(lexeme) {
+      if (lexeme.match(operators)) {
+        token("operator", lexeme);
+      } else if (lexeme !== "") {
+        token("literal", lexeme);
       }
-
-      tags = tags.trim();
-      var offset = start + result[0].search(tags) - 1;
-      tags.split(":").forEach(function(tag) {
-        if (tag === "") {
-          offset += 1;
-          return;
-        }
-        tokens.push(token("tag", tag, offset));
-        offset += (tag.length + 1);
-      });
-
-    } else {
-      addContent(line, start);
-    }
+      offset += (lexeme.length + 1);
+    });
   }
   while ((end = slidemark.indexOf('\n', start)) !== -1) {
     processLine(slidemark.substring(start, end + 1));
     start = end + 1;
   }
-  processLine(slidemark.substring(start));
-  flushContent();
+  var lastLine = slidemark.substring(start);
+  if (lastLine !== "") {
+    processLine(lastLine);
+  }
 
   return tokens;
 }
 
 exports.create = function() {
-  var errors = [];
-  var lexerFunc = function(slidemarkCode) {
-    if (slidemarkCode === undefined) {
-      throw new Error("slidemark code is not defined");
-    }
-    return lex0(slidemarkCode.trim());
-  };
+  var lexer = lex.bind(null);
 
-  lexerFunc.errors = errors;
-  Object.defineProperty(lexerFunc, "hasErrors", {
-    get: function() { return errors.length != 0; }
+  // no errors possible, just implementing interface
+  Object.defineProperty(lexer, "errors", {
+    get: function() { return []; }
   });
-  return lexerFunc;
+  Object.defineProperty(lexer, "hasErrors", {
+    get: function() { return false; }
+  });
+  return lexer;
 };
-
 
