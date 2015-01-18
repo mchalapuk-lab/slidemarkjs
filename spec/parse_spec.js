@@ -1,3 +1,6 @@
+// author: Maciej Chałapuk
+// license: MIT
+
 describe("slidemark.parse(),", function() {
   "use strict";
 
@@ -11,7 +14,8 @@ describe("slidemark.parse(),", function() {
       try {
         this.test();
       } catch(e) {
-        expect(e.message).toEqual("slidemark code is not defined");
+        expect(e.name).toEqual("ReferenceError");
+        expect(e.message).toEqual("slidemark");
       }
     });
   });

@@ -3,17 +3,25 @@
 
   Takes a string containing slidemark directives.
   '%' at first char in the line indicates start of a directive.
-  White spaces are used as separators between literals.
  
   Returns array with tokens { type, value, offset }, where:
 
    type      | possible value
   -----------+--------------------------------------------------
-  'operator' | '%' or '%%'
-  'literal'  | any string that is not an operator,
-  'unknown'  | unprocessed lines that do not start with '%' char
+  'operator' | strings '%', ';', ':', which are not prepended with '\',
+  'literal'  | any string without white space that is not an operator,
+  'void'     | unprocessed lines that do not start with '%'.
 
  */
+function Lexer() {
+
+var directiveStarter = "%";
+var operators = ["%", ":", ";"];
+var escapeChar = "\\\\";
+var separators = [" ", "\t", "\n"];
+
+var globalOffset = 0;
+
 function lex(slidemark) {
   if (slidemark === undefined) {
     var error = new Error("slidemark");
@@ -21,33 +29,61 @@ function lex(slidemark) {
     throw error;
   }
 
+  var start = 0;
+
   var tokens = [];
-  var directiveStarter = '%';
-  var operators = /^%?%$/;
-  var separators = /[ \t\n]/;
-  var start = 0, end;
+  tokens.add = function(type, value, offset) {
+    this.push({ type: type, value: value, offset: globalOffset+start+offset });
+  }
+
+  function LiteralBuilder() {
+    var _content = "",
+        _offset = 0;
+
+    return {
+      add: function(c, o) {
+        if (_content === "") {
+          _offset = o;
+        }
+        _content += c;
+      },
+        flush: function() {
+          if (_content !== "") {
+            tokens.add("literal", _content, _offset);
+            _content = "";
+          }
+        }
+    };
+  }
 
   function processLine(line) {
-    var offset = 0;
-    function token(type, value) {
-      var t = { type: type, value: value, offset: start + offset };
-      tokens.push(t);
-      return t;
-    }
-
     if (line.charAt(0) !== directiveStarter) {
-      token("unknown", line);
+      tokens.add("void", line, 0);
       return;
     }
 
-    line.split(separators).forEach(function(lexeme) {
-      if (lexeme.match(operators)) {
-        token("operator", lexeme);
-      } else if (lexeme !== "") {
-        token("literal", lexeme);
+    var literal = new LiteralBuilder(),
+        escapeNext = false,
+        offset = 0;
+
+    line.split("").forEach(function(c) {
+      if (escapeNext) {
+        escapeNext = false;
+        literal.add(c, offset);
+      } else if (c === escapeChar) {
+        escapeNext = true;
+      } else if (operators.indexOf(c) != -1) {
+        literal.flush(tokens);
+        tokens.add("operator", c, offset);
+      } else if (separators.indexOf(c) != -1) {
+        literal.flush(tokens);
+      } else {
+        literal.add(c, offset);
       }
-      offset += (lexeme.length + 1);
+      offset += 1;
     });
+
+    literal.flush(tokens);
   }
   while ((end = slidemark.indexOf('\n', start)) !== -1) {
     processLine(slidemark.substring(start, end + 1));
@@ -58,19 +94,20 @@ function lex(slidemark) {
     processLine(lastLine);
   }
 
+  globalOffset += slidemark.length;
   return tokens;
 }
 
-exports.create = function() {
-  var lexer = lex.bind(null);
+// no errors possible, just implementing interface
+Object.defineProperty(lex, "errors", {
+  get: function() { return []; }
+});
+Object.defineProperty(lex, "hasErrors", {
+  get: function() { return false; }
+});
 
-  // no errors possible, just implementing interface
-  Object.defineProperty(lexer, "errors", {
-    get: function() { return []; }
-  });
-  Object.defineProperty(lexer, "hasErrors", {
-    get: function() { return false; }
-  });
-  return lexer;
-};
+return lex;
+}
+
+module.exports = Lexer;
 

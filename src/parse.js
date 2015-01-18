@@ -18,7 +18,7 @@ function Phase(name, applyPhase) {
 
 exports.parse = function(slidemarkCode) {
   var phases = [
-    new Phase("Lexing", Lexer.create()),
+    new Phase("Lexing", new Lexer),
     new Phase("Parsing", Parser.create()),
     new Phase("Semantic", Semantizer.create()),
     new Phase("Generation", Generator.create())
