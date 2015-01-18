@@ -1,3 +1,5 @@
+// author: Maciej Chałapuk
+// license: MIT
 'usestrict';
 /*
 

@@ -17,6 +17,27 @@ module.exports = {
   },
   v: function(value, offset) {
     return token("void", value, offset);
+  },
+  slide: function(title, offset, tags, content, sub) {
+    return { title: title, offset: offset,
+      tags: tags || [], content: content || [], sub: sub || [] };
+  },
+  subslide: function(offset, tags, content) {
+    return { offset: offset, tags: tags || [], content: content || [] };
+  },
+  tag: function(name, offset) {
+    return { name: name, offset: offset };
+  },
+  content: function(value, offset) {
+    return { type: "content", value: value, offset: offset };
+  },
+  comment: function(value, offset) {
+    return { type: "comment", value: value, offset: offset };
+  },
+  error: function(name, message) {
+    var error = new Error(message);
+    error.name = name;
+    return error;
   }
 }
 

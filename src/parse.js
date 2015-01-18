@@ -1,3 +1,5 @@
+// author: Maciej Chałapuk
+// license: MIT
 'use strict';
 
 var Lexer = require("./internal/lexer");
@@ -19,7 +21,7 @@ function Phase(name, applyPhase) {
 exports.parse = function(slidemarkCode) {
   var phases = [
     new Phase("Lexing", new Lexer),
-    new Phase("Parsing", Parser.create()),
+    new Phase("Parsing", new Parser),
     new Phase("Semantic", Semantizer.create()),
     new Phase("Generation", Generator.create())
   ];

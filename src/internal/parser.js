@@ -1,6 +1,9 @@
+// author: Maciej Chałapuk
+// license: MIT
+
 'usestrict';
 
-exports.create = function() {
+function Parser() {
   var errors = [];
   var parse = function(tokens) {
     var tree = [];
@@ -12,10 +15,14 @@ exports.create = function() {
     throw new Error("not implemented");
   };
 
-  parse.errors = errors;
+  Object.defineProperty(parse, "errors", {
+    get: function() { return errors; }
+  });
   Object.defineProperty(parse, "hasErrors", {
     get: function() { return errors.length != 0; }
   });
   return parse;
-};
+}
+
+module.exports = Parser;
 
