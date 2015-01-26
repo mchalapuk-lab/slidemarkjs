@@ -11,8 +11,5 @@ var ParseError = Class.extend(Error, function(name, errors) {
   });
 });
 
-exports.ParseError = ParseError;
-exports.create = function(name, errors) {
-  return ParseError(name, errors);
-};
+module.exports = ParseError;
 
